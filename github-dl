@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+
+TMP_DIR="$HOME/tmp/github-dl";
+
+
+repoUrl="$1";
+
+if [ -z "$repoUrl" ]; then
+  echo "github-dl <git-clone-url>"
+  exit 1;
+fi
+repoName=$(basename "$repoUrl");
+repoName=$(basename "${repoName%%.*}");
+archiveName="${repoName}.tar.gz"
+
+
+if [ ! -e "$TMP_DIR" ]; then
+  mkdir "$TMP_DIR";
+fi
+
+cd "$TMP_DIR";
+
+if [ -e "./$repoName" ]; then
+  cd "./$repoName";
+  git pull;
+  cd ../
+else 
+  git clone "$1";
+fi
+
+
+tar -czvf "./$archiveName" "./$repoName"
+
+
+targetFile="$HOME/Downloads/$archiveName";
+if [ -f "$targetFile" ]; then
+  echo "$targetFile  exists";
+  exit 1;
+fi
+
+mv "./$archiveName" "$targetFile";
+
